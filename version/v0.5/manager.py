@@ -52,7 +52,7 @@ def connect_to_server():
 		command = str(0)+str(SERVER_AUTH)
 		print(command)
 		s.send(command.encode('utf-8'))
-		data = s.recv(1024).decode()
+		data = s.recv(1024)
 		print(data)
 		if data[0] == "0":
 			i = 1

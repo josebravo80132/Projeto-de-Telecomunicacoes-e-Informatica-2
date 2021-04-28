@@ -76,11 +76,12 @@ def latency_test(n_messages, dest_peer_ip):
 		print("UDP target IP: %s" % UDP_IP)
 		print("UDP target port: %s" % UDP_PORT)
 		print("message: %s" % MESSAGE)
-		res_mean = 0
+		rtt_mean = 0
 	
 		for i in range(n_messages):
-			destination_peer.sendData(MESSAGE)
+
 			milliseconds_inicial = float(round(time.time() * 10000000))
+			destination_peer.sendData(MESSAGE)
 			
 			self_peer_udp.receiveData(1)
 			milliseconds_final = float(round(time.time() * 10000000))
@@ -93,21 +94,23 @@ def latency_test(n_messages, dest_peer_ip):
 	else:										#destination peer for test
 		for i in range(n_messages):
 			data = self_peer_udp.receiveData(1)
+			milliseconds_final = float(round(time.time() * 10000000))
+			data
 			destination_peer.sendData(data)
 
 		return 0
 
 
 
-def m_interpreter(tpt, ipd):
-	if(tpt == 1):
+def m_interpreter(tpt, ipd, opc):
+	if(tpt == "1"):
 		ip_dest = socket.inet_ntoa(ipd)
 		result = latency_test(10, ip_dest)
 		if(SELF_IP != ipd):
 			send_result(result)
 		conn.close()
 
-	if(tpt == 2):
+	if(tpt == "2"):
 		ip_dest = socket.inet_ntoa(ipd)
 		result = loss_packets(10, ip_dest)
 		if(SELF_IP == ipd):
@@ -129,15 +132,16 @@ while 1:
 	if not data: break
 	else:
 
-		server_message = data.decode()
+		server_request = data.decode().split()
 		tpm = server_message[0]
 		tpt = server_message[1]
-		ipd = server_message[2:6]
+		ipd = server_message[2]
+		opc = server_message[3]
 
-		print(tpm+"||"+tpt+"||"+ipd)
+		print(tpm+"||"+tpt+"||"+ipd+"||"+opc)
 
 		if(tpm == 1):
-			m_interpreter(tpt, ipd)
+			m_interpreter(tpt, ipd, opc)
 
 		else:
 			print('error')

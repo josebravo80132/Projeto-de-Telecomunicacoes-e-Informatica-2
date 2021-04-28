@@ -22,16 +22,16 @@ class manager_thread(Thread):
 	def run(self):
 		while True:
 			data = conn.recv(10).decode()
-			print(data[0])
+			print(data)
 
 			if data[0] == "0" : 
 				getAvailablePeers()
 				a = socket.inet_aton('192.168.0.1')
 				b = socket.inet_aton('192.168.0.2')
 				c = socket.inet_aton('192.168.0.3')
-				response =str(0) + str(a) + str(b) + str(c) 
+				response =b'0' + a + b + c 
 				print(response)
-				conn.send(response.encode('utf-8'))
+				conn.send(response)
 				break
 
 
@@ -45,7 +45,6 @@ if __name__ == '__main__':
 		tcp_manager.listen(4)
 		print("Waiting for connections from managers")
 		(conn, (ip, port)) = tcp_manager.accept()
-
 		thread_man = manager_thread(ip, port)
 		thread_man.start()
 
