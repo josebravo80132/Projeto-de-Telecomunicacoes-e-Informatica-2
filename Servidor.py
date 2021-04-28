@@ -64,7 +64,7 @@ def waitPeersResponse(timeout):
 
 
 if __name__ == '__main__':
-
+	
     gestorCMD = wait_gestor() ## ID | TipoTeste | PeerA | PeerB | Opcional
     timeout = activatePeers(gestorCMD)
     waitPeersResponse(timeout)

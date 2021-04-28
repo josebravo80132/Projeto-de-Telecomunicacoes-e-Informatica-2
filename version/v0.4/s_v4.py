@@ -139,7 +139,7 @@ def switch_serv(number):
 
 def server_program():
 	# get the hostname
-	host = sys.argv[1]
+	host = socket.gethostbyname(socket.gethostname())
 	port = 5000  # initiate port no above 1024
 
 	server_socket = socket.socket()  # get instance
