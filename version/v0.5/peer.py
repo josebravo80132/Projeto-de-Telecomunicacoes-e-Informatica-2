@@ -4,8 +4,7 @@ import time
 
 SERVER_IP = 0
 
-SELF_IP = socket.gethostbyname(socket.gethostname())
-
+SELF_IP = '0.0.0.0'
 TCP_PORT = 5000
 UDP_PORT = 8000
 
@@ -17,19 +16,19 @@ class udp_socket:
 		self.port = port
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-  	def bindSocket(self):
-  		self.sock.bind(self.ip, self.port)
+	def bindSocket(self):
+		self.sock.bind(self.ip, self.port)
 
-  	def closeSocket(self):
-  		self.sock.close()
+	def closeSocket(self):
+		self.sock.close()
 
-  	def receiveData(self, data_size):
-  		data, addr = self.sock.recvfrom(data_size)
-  		print("received message: %s" % data)
-  		return data
+	def receiveData(self, data_size):
+		data, addr = self.sock.recvfrom(data_size)
+		print("received message: %s" % data)
+		return data
 
-  	def sendData(self, test_data):
-  		self.sock.sendto(test_data, (self.ip, self.port))
+	def sendData(self, test_data):
+		self.sock.sendto(test_data, (self.ip, self.port))
 
 
 def send_result(tpt, result):
@@ -47,17 +46,16 @@ def loss_packets(n_MBytes, dest_peer_ip):
 	
 	if(SELF_IP != dest_peer_ip):				#origin peer for test
 
-		while(n_pacotes != 0):
+		for i in range(n_pacotes):
 			packet = random.randbytes(1024)
-			destination_peer.sendData(packet)			
-			n_pacotes--
+			destination_peer.sendData(packet)
 
 	else:										#destination peer for test
 		i=0
 		while(1):
 			try:
 				if(self_peer_udp.receiveData(1024) > len(0)):
-					i++
+					i+=1
 			except:
 				print("Timeout occured")
 				break
@@ -68,7 +66,6 @@ def loss_packets(n_MBytes, dest_peer_ip):
 def latency_test(n_messages, dest_peer_ip):
 	milliseconds_inicial = 0
 	milliseconds_final = 0
-	i=n_messages
 
 	destination_peer = udp_socket(dest_peer_ip, UDP_PORT)
 	self_peer_udp = udp_socket(SELF_IP, UDP_PORT)
@@ -80,25 +77,23 @@ def latency_test(n_messages, dest_peer_ip):
 		print("UDP target port: %s" % UDP_PORT)
 		print("message: %s" % MESSAGE)
 		res_mean = 0
-		
-		while(i>0):
+	
+		for i in range(n_messages):
 			destination_peer.sendData(MESSAGE)
 			milliseconds_inicial = float(round(time.time() * 10000000))
 			
 			self_peer_udp.receiveData(1)
 			milliseconds_final = float(round(time.time() * 10000000))
 			res_mean =+ (milliseconds_final- milliseconds_inicial)
-			i--
 
 		res_mean = res_mean/n_messages
 		self_peer_udp.closeSocket()
 		return res_mean
 
 	else:										#destination peer for test
-		while(i>0):
+		for i in range(n_messages):
 			data = self_peer_udp.receiveData(1)
 			destination_peer.sendData(data)
-			i--
 
 		return 0
 
@@ -139,7 +134,7 @@ while 1:
 		tpt = server_message[1]
 		ipd = server_message[2:6]
 
-		print(tpm"||"tpt"||"ipd)
+		print(tpm+"||"+tpt+"||"+ipd)
 
 		if(tpm == 1):
 			m_interpreter(tpt, ipd)

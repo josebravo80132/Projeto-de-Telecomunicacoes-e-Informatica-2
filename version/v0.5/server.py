@@ -3,7 +3,7 @@ import socket
 import sys
 from threading import Thread
 
-SELF_IP =socket.gethostbyname(socket.gethostname())
+SELF_IP ='0.0.0.0'
 
 TCP_PORT = 5000       
 UDP_PORT = 8000
@@ -21,16 +21,18 @@ class manager_thread(Thread):
 
 	def run(self):
 		while True:
-			data = conn.recv(10)
-			print(b[0])
+			data = conn.recv(10).decode()
+			print(data[0])
 
-			if data[1] == '0' : 
+			if data[0] == "0" : 
 				getAvailablePeers()
 				a = socket.inet_aton('192.168.0.1')
 				b = socket.inet_aton('192.168.0.2')
 				c = socket.inet_aton('192.168.0.3')
-
-				conn.send(b'0' + a + b + c)
+				response =str(0) + str(a) + str(b) + str(c) 
+				print(response)
+				conn.send(response.encode('utf-8'))
+				break
 
 
 if __name__ == '__main__':

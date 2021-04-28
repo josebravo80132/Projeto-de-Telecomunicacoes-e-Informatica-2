@@ -1,6 +1,6 @@
 import socket
 
-SERVER_AUTH = b'42069'
+SERVER_AUTH = 42069
 
 def getUI():
 
@@ -49,13 +49,15 @@ def connect_to_server():
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.connect((HOST, PORT))
 		#Hello m0essage to server
-		command = b'0' +  SERVER_AUTH
+		command = str(0)+str(SERVER_AUTH)
 		print(command)
-		s.send(command)
+		s.send(command.encode('utf-8'))
 		data = s.recv(1024).decode()
-		if data[0] == 0:
+		print(data)
+		if data[0] == "0":
 			i = 1
 			peer_id = 0
+			print(data[1:5])
 			
 			while(data[i:i+3] != None):
 				peer = data[i:i+4]        
