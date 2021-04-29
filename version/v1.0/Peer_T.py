@@ -54,13 +54,13 @@ def getLostPackets(requestFields):
         nPackets = int(requestFields[3])
         start_timer = time.time()
         if destinationIP == local_ip:
-            waitUDP_message(1, 5)
+            waitUDP_message(2, 5)
         else:
             counter = 0
             while counter < nPackets:
                 data = str(secrets.token_bytes(1020))
                 data = data.replace(" ", "-")				
-                message = (str(counter) + " ").encode()+data.encode()
+                message = ((str(counter) + " ")+data).encode()
                 sendUDP_message(message, destinationIP)
                 counter = counter + 1
             print("Finished ...")
@@ -76,10 +76,10 @@ def waitUDP_message(test, timeout):
         while True:
             try:
                 receivedData, addr = socket_UDP.recvfrom(1024)
-                dataFields = receivedData.decode().split()
-                tmstpAUX += time.time()-float(dataFields[1])
-                print("(UDP) Received Packet " +
-                      str(packetCounter)+": "+str(receivedData))
+                if test == 1:
+                       dataFields = receivedData.decode().split()
+                       tmstpAUX += time.time()-float(dataFields[1])
+                print("(UDP) Received Packet " +str(packetCounter)+": "+str(receivedData))
                 packetCounter = packetCounter + 1
             except:
                 if test == 1:

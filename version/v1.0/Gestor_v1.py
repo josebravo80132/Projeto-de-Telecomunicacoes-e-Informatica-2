@@ -38,10 +38,13 @@ def getMenuTestes():
     teste_selecionado = input("Selecione o teste a efetuar: ")
     peerInicial = input("Endereço do Peer inicial: ")
     peerFinal = input("Endereço do Peer destino: ")
-    intervMonitor = input("Intervalo de monitorização (s): ")
+    if teste_selecionado == "2":
+        optional = input("Número de pacotes a enviar: ")
+    else:
+        optional = input("Intervalo de monitorização (s): ")
 
     # ID | Teste | Peer A | Peer B | Opcional/IntervaloMonitorizaçao
-    messageToServer = '0 '+teste_selecionado+' '+peerInicial+' '+peerFinal+' '+intervMonitor
+    messageToServer = '0 '+teste_selecionado+' '+peerInicial+' '+peerFinal+' '+optional
     connect_to_server(messageToServer)
 
     
