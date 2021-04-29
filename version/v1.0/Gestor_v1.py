@@ -76,7 +76,8 @@ def waitServerResult():
         return result    
 
 if __name__ == '__main__':
-    #getMainMenu()
-    getMenuTestes()
-    server_result = waitServerResult().decode()
-    print("\n Resultado: "+str(server_result))
+    while 1:
+	    #getMainMenu()
+	    getMenuTestes()
+	    server_result = waitServerResult().decode()
+	    print("\n Resultado: "+str(server_result))

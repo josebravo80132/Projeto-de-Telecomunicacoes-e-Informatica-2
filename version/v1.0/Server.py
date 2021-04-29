@@ -72,9 +72,10 @@ def sendResult_Gestor(resultado):
 
 
 if __name__ == '__main__':
-    gestorRequest = waitGestorRequest().decode()
-    print("Gestor Request: "+str(gestorRequest))
-    activatePeers(gestorRequest)
-    monitorizationResult = waitPeerResult()
-    print("Monitorization Result: "+str(monitorizationResult))
-    sendResult_Gestor(monitorizationResult)
+    while 1:
+	    gestorRequest = waitGestorRequest().decode()
+	    print("Gestor Request: "+str(gestorRequest))
+	    activatePeers(gestorRequest)
+	    monitorizationResult = waitPeerResult()
+	    print("Monitorization Result: "+str(monitorizationResult))
+	    sendResult_Gestor(monitorizationResult)
