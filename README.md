@@ -1,4 +1,3 @@
 # Universidade do Minho
-# MIETI
-# Projeto de Telecomunicações e Informatica 2
-# Grupo 5
+#MIETI: Projeto de Telecomunicações e Informatica 2
+#Grupo5
