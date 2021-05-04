@@ -86,6 +86,7 @@ def waitUDP_message(test, timeout):
                     print("Monitoring Finished - Latencia Media = " +
                           str(tmstpAUX/packetCounter)+" ")
                     sendTCP_Server(1, test, str(tmstpAUX/packetCounter))
+                    
                 elif test == 2:
                     print("Monitoring Finished - Pacotes Recebidos = " +
                           str(packetCounter)+" ")
@@ -106,8 +107,8 @@ def sendTCP_Server(typeID, teste, resultado):
         print("Starting TCP connection with "+serverIP+" ...")
         port = 5000
 
-        socket_TCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_TCP.connect((serverIP, port))
+        # socket_TCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # socket_TCP.connect((serverIP, port))
         socket_TCP.send(message.encode())
         socket_TCP.close()
 
