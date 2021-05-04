@@ -1,4 +1,6 @@
 import socket
+import sqlite3
+import time
 
 
 def switch(number):
@@ -47,6 +49,7 @@ def getMenuTestes():
     messageToServer = '0 '+teste_selecionado+' '+peerInicial+' '+peerFinal+' '+optional
     connect_to_server(messageToServer)
 
+    return [peerInicial, peerFinal]
     
 
 def connect_to_server(message):
@@ -73,11 +76,34 @@ def waitServerResult():
         result = connection.recv(1024)
         if not result:
             break
-        return result    
+        return result 
+	
 
 if __name__ == '__main__':
     while 1:
 	    #getMainMenu()
-	    getMenuTestes()
-	    server_result = waitServerResult().decode()
-	    print("\n Resultado: "+str(server_result))
+	    conn = sqlite3.connect("localhost")
+	    print("Garantido acesso a base de dados\n")
+	    print("1 - Menu de Monitorizacao")
+	    print("2 - Aceder a base de dados")
+	    opcao = input("Escolha a opcao: ")
+	    if opcao == "1":
+	    	aux = getMenuTestes()
+	    	server_result = waitServerResult().decode()
+	    	x = server_result.split()
+	    	conn.execute("INSERT INTO TESTES (ID, PEER_I, PEER_F, RESULT) VALUES(?,?,?,?)", (x[1], aux[0], aux[1],  x[2]))
+	    	conn.commit()
+	    	print("Adicionado com sucesso a base de dados")
+	    	print("\n Resultado: "+str(server_result))
+	    if opcao == '2':
+	   		cursor = conn.execute("SELECT SEQ, ID, PEER_I, PEER_F, RESULT, TIMESTAMP from TESTES")
+
+	   		for row in cursor:
+	   			print("SEQ = ", row[0])
+	   			print("ID = ", row[1])
+	   			print("PEER_I = ", row[2])
+	   			print("PEER_F = ", row[3])
+	   			print("RESULT = ", row[4])
+	   			print("TIMESTAMP = ", row[5])
+
+	   		print("Operacao Concluida!")
