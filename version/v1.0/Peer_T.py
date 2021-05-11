@@ -104,10 +104,6 @@ def sendTCP_Server(typeID, teste, resultado):
 		# |ID| TESTE | Resultado | Opcional |
 		message = str(typeID)+' '+str(teste)+' '+str(resultado)
 		print("Starting TCP connection with "+serverIP+" ...")
-		#port = 5000
-
-		# socket_TCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		# socket_TCP.connect((serverIP, port))
 		connection.send(message.encode())
 
 if __name__ == '__main__':

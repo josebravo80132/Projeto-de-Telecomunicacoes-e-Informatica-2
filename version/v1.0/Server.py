@@ -8,6 +8,56 @@ gestorIP = '10.0.0.20'
 
 TCP_PORT = 5000
 
+
+class gestor_thread(Thread):
+	def __init__(self, ip, port):
+		Thread.__init__(self)
+		self.ip = ip
+		self.port = port
+		print("New thread for manager connection handling")
+		
+
+	def run(self):
+		socket_peer_inicial = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		socket_peer_final = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		peer_threads = []
+
+		while True:
+			gestorRequest = conn.recv(1024).decode()
+			print(gestorRequest)
+
+			requestFields = gestorRequest.split()
+			typeID = requestFields[0]
+			teste = requestFields[1]
+			peerA_IP = requestFields[2]
+			global peerB_IP
+			peerB_IP = requestFields[3]
+			optional = requestFields[4]
+
+			socket_peer_inicial.connect((peerA_IP, TCP_PORT))
+			socket_peer_final.connect((peerB_IP, TCP_PORT))
+			
+			global message
+			message = typeID+' '+teste+' '+peerB_IP+' '+optional
+			print(message)
+
+			thread_inicial = peers_thread(socket_peer_inicial, message)
+			thread_final = peers_thread(socket_peer_final, message)
+
+			thread_inicial.start()
+			thread_final.start()
+
+			peer_threads.append(thread_inicial)
+			peer_threads.append(thread_final)
+
+			for t in peer_threads:
+				t.join()
+
+			break
+
+
+
+
 def waitGestorRequest():
 	port = 5000
 
@@ -25,7 +75,7 @@ def waitGestorRequest():
 		return gestorRequest 
 
 
-class activatePeers_thread(Thread):
+class peers_thread(Thread):
 
 	def __init__(self, peer_socket, message):
 		Thread.__init__(self)
@@ -69,41 +119,55 @@ def sendResult_Gestor(resultado):
 
 if __name__ == '__main__':
 
-	threads = []
+
+	print("*** Server ***\n Waiting on port "+str(TCP_PORT)+" ...")
+	socket_TCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	socket_TCP.bind((serverIP, TCP_PORT))
+
+	threads_gestor = []
 	
 	while 1:
-		gestorRequest = waitGestorRequest().decode()
-		print("Gestor Request: "+str(gestorRequest))
+		socket_TCP.listen(1)
+		(conn,(ip,port)) = socket_TCP.accept()
+		thread_g = gestor_thread(ip, port)
+		thread_g.start()
 
-		socket_peer_inicial = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		socket_peer_final = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		
+		threads_gestor.append(thread_g)
 
-		requestFields = gestorRequest.split()
-		typeID = requestFields[0]
-		teste = requestFields[1]
-		peerA_IP = requestFields[2]
-		peerB_IP = requestFields[3]
-		optional = requestFields[4]
-
-		socket_peer_inicial.connect((peerA_IP, TCP_PORT))
-		socket_peer_final.connect((peerB_IP, TCP_PORT))
-		
-		
-		message = typeID+' '+teste+' '+peerB_IP+' '+optional
-
-
-		thread_inicial = activatePeers_thread(socket_peer_inicial, message)
-		thread_final = activatePeers_thread(socket_peer_final, message)
-
-		thread_inicial.start()
-		thread_final.start()
-
-		threads.append(thread_inicial)
-		threads.append(thread_final)
-
-		for t in threads:
+		for t in threads_gestor:
 			t.join()
+		
+		#gestorRequest = waitGestorRequest().decode()
+		#print("Gestor Request: "+str(gestorRequest))
+
+		
+		
+
+		# requestFields = gestorRequest.split()
+		# typeID = requestFields[0]
+		# teste = requestFields[1]
+		# peerA_IP = requestFields[2]
+		# peerB_IP = requestFields[3]
+		# optional = requestFields[4]
+
+		# socket_peer_inicial.connect((peerA_IP, TCP_PORT))
+		# socket_peer_final.connect((peerB_IP, TCP_PORT))
+		
+		
+		# message = typeID+' '+teste+' '+peerB_IP+' '+optional
+
+
+		# thread_inicial = activatePeers_thread(socket_peer_inicial, message)
+		# thread_final = activatePeers_thread(socket_peer_final, message)
+
+		# thread_inicial.start()
+		# thread_final.start()
+
+		# threads.append(thread_inicial)
+		# threads.append(thread_final)
+
+		# for t in threads:
+		# 	t.join()
 
 
 		#socket_peer.connect()
