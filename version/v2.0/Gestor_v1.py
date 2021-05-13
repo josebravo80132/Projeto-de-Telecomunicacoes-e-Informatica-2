@@ -40,10 +40,12 @@ def getMenuTestes():
     teste_selecionado = input("Selecione o teste a efetuar: ")
     peerInicial = input("Endereço do Peer inicial: ")
     peerFinal = input("Endereço do Peer destino: ")
-    if teste_selecionado == "2":
-        optional = input("Número de pacotes a enviar: ")
-    else:
+    if teste_selecionado == "1":
         optional = input("Intervalo de monitorização (s): ")
+    elif teste_selecionado == "2":
+        optional = input("Número de pacotes a enviar: ")
+    elif teste_selecionado == "3":
+        optional = "-"
 
     # ID | Teste | Peer A | Peer B | Opcional/IntervaloMonitorizaçao
     messageToServer = '0 '+teste_selecionado + \
@@ -82,9 +84,26 @@ def waitServerResult():
 def printMonitorizationResult(resultado):
     # ID TipoTeste Resultado (10.0.18.1),(10.0.2.1),(10.0.1.1),
     resultFields = resultado.split()
-    print("\n*** Resultado ***\n"+' Tipo de Teste: '+str(resultFields[1])+'\n Resultado: '+str(
+    expectedRoute = resultFields[3].split(",")
+    print(expectedRoute)
+
+
+    if resultFields[1] == "1":
+        print("\n*** Resultado ***\n"+'Latencia entre : '+str(expectedRoute[0])+' -> '+str(expectedRoute[-1])+'\n Resultado: '+format(
+        float(resultFields[2]), ".9f")+'s \n')
+
+    elif resultFields[1] == "2":
+        print("\n*** Resultado ***\n"+' Tipo de Teste: '+str(resultFields[1])+'\n Resultado: '+str(
+        resultFields[2])+'\n Rota Expectável: '+str(resultFields[3])+'\n')
+    
+    elif resultFields[1] == "3":
+        print("\n*** Resultado ***\n"+' Tipo de Teste: '+str(resultFields[1])+'\n Resultado: '+str(
         resultFields[2])+'\n Rota Expectável: '+str(resultFields[3])+'\n')
 
+    elif resultFields[1] == "4":
+        print("\n*** Resultado ***\n"+' Tipo de Teste: '+str(resultFields[1])+'\n Resultado: '+str(
+        resultFields[2])+'\n Rota Expectável: '+str(resultFields[3])+'\n')
+    
 
 if __name__ == '__main__':
     while 1:

@@ -30,6 +30,8 @@ def processRequest(request):
             getLatencia(requestFields)
         elif teste == "2":
             getLostPackets(requestFields)
+        elif teste == "3":
+            getBandwidth(requestFields)
 
 
 def getLatencia(requestFields):
@@ -64,6 +66,21 @@ def getLostPackets(requestFields):
             counter = counter + 1
         print("Finished ...")
 
+def getBandwidth(requestFields):
+    destinationIP = requestFields[2]
+    nPackets = 10000
+    if destinationIP == local_ip:
+        waitUDP_message(3, 1)
+    else:
+        counter = 0
+        while counter < nPackets:
+            data = str(secrets.token_bytes(1000))
+            data = data.replace(" ", "-")
+            message = data.encode()
+            sendUDP_message(message, destinationIP)
+            counter = counter + 1
+        print("Finished ...")
+
 
 def waitUDP_message(test, timeout):
     print("(UDP) Waiting Peer message ...")
@@ -78,14 +95,13 @@ def waitUDP_message(test, timeout):
             receivedData, (fromIP, ports) = socket_UDP.recvfrom(1024)
             if test == 1:
                 dataFields = receivedData.decode().split()
-                tmstpAUX += time.time()-float(dataFields[1])
-            print("(UDP) Received Packet " +
-                  str(packetCounter)+": "+str(receivedData))
+                tmstpAUX += time.perf_counter()-float(dataFields[1])
+            #print("(UDP) Received Packet "+str(packetCounter))
             packetCounter = packetCounter + 1
         except:
             if test == 1:
                 print("Monitoring Finished - Latencia Media = " +
-                      str(tmstpAUX/packetCounter)+" ")
+                      str(tmstpAUX/packetCounter)+" segundos")
                 socket_UDP.settimeout(None)
                 sendTCP_Server(1, test, str(tmstpAUX/packetCounter), fromIP)
 
@@ -93,27 +109,29 @@ def waitUDP_message(test, timeout):
                 print("Monitoring Finished - Pacotes Recebidos = " +
                       str(packetCounter)+" ")
                 sendTCP_Server(1, test, str(packetCounter), fromIP)
+            elif test == 3:
+                timer_end = time.perf_counter()
+                result_bw = ((packetCounter*1000)/(timer_end-timer_start)) 
+                print("Demorou "+format((timer_end-timer_start),".2f")+ " segundos a transmitir 10 Mb")
+                print("Monitoring Finished - Largura de banda = " + 
+                    format(((packetCounter*1000)/(timer_end-timer_start)), ".2f")+ " bytes/seg" )
+                sendTCP_Server(1, test, result_bw, fromIP )
             break
 
 
 def sendUDP_message(message, destinationIP):
-    print("(UDP) Sending for Peer "+str(destinationIP)+" ...")
+    #print("(UDP) Sending for Peer "+str(destinationIP)+" ...")
     socket_UDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    timestamp = time.time()
+    timestamp = time.perf_counter()
     udpMSG = message + str(timestamp).encode()
     socket_UDP.sendto(udpMSG, (destinationIP, UDP_PORT))
-    print("(UDP) Sent +"+str(udpMSG)+" ...")
 
 
 def sendTCP_Server(typeID, teste, resultado, tracerouteIP):
-    # |ID| TESTE | Resultado | Opcional |
     rota = execute("traceroute", tracerouteIP)
     message = str(typeID)+' '+str(teste)+' '+str(resultado)+' '+str(rota)
+    print(message)
     print("Starting TCP connection with "+serverIP+" ...")
-    #port = 5000
-
-    # socket_TCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # socket_TCP.connect((serverIP, port))
     connection.send(message.encode())
 
 
@@ -122,11 +140,14 @@ def execute(comando, arg1):
         'utf-8').split("\n")
     res.pop(0)
     res.pop(len(res)-1)
+    print(res)
     interfacesIP = ""
     for line in res:
         fields = line.split("  ")
+        print(fields)
         fields = fields[1].split()
         interfacesIP += str(fields[1])+","
+    interfacesIP = interfacesIP[:-1]
     return interfacesIP
 
 

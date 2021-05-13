@@ -51,6 +51,7 @@ class activatePeers_thread(Thread):
 					print(e)
 					self.peer_socket.close()
 					break
+			print(res)
 			sendResult_Gestor(res)
 			break	
 
