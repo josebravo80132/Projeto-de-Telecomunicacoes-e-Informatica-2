@@ -29,7 +29,7 @@ u = output.split(" ")
 
 	exec(program, globals(), loc)
 
-	texto, texto_v1, texto_v2, texto_v3 = [] [] [] []
+	texto, texto_v1, texto_v2, texto_v3 = [], [], [], []
 	str_final = "" 
 
 	for i in loc:
