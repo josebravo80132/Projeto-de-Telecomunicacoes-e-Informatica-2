@@ -3,8 +3,8 @@ from threading import Thread
 import time
 import errno
 
-serverIP = '10.0.0.10' #socket.gethostbyname(socket.gethostname())
-gestorIP = '10.0.0.20'
+serverIP = socket.gethostbyname(socket.gethostname())
+gestorIP =  socket.gethostbyname("gestorIP")
 
 TCP_PORT = 5000
 

@@ -131,20 +131,21 @@ def sendTCP_Server(typeID, teste, resultado, tracerouteIP):
     rota = execute("traceroute", tracerouteIP)
     message = str(typeID)+' '+str(teste)+' '+str(resultado)+' '+str(rota)
     print(message)
-    print("Starting TCP connection with "+serverIP+" ...")
+    print("(TCP) Sending result to server ("+serverIP+") ...")
     connection.send(message.encode())
 
 
 def execute(comando, arg1):
+    print("\nExecuting "+comando)
     res = subprocess.run([comando, arg1], stdout=subprocess.PIPE).stdout.decode(
         'utf-8').split("\n")
     res.pop(0)
     res.pop(len(res)-1)
-    print(res)
+    #print(res)
     interfacesIP = ""
     for line in res:
         fields = line.split("  ")
-        print(fields)
+        #print(fields)
         fields = fields[1].split()
         interfacesIP += str(fields[1])+","
     interfacesIP = interfacesIP[:-1]
