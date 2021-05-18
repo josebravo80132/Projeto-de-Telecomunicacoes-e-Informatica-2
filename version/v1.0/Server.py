@@ -41,8 +41,8 @@ class gestor_thread(Thread):
 			message = typeID+' '+teste+' '+peerB_IP+' '+optional
 			print(message)
 
-			thread_inicial = peers_thread(socket_peer_inicial, message)
-			thread_final = peers_thread(socket_peer_final, message)
+			thread_inicial = peers_thread(socket_peer_inicial, message, conn)
+			thread_final = peers_thread(socket_peer_final, message, conn)
 
 			thread_inicial.start()
 			thread_final.start()
@@ -53,34 +53,17 @@ class gestor_thread(Thread):
 			for t in peer_threads:
 				t.join()
 
+			conn.close()
+
 			break
-
-
-
-
-def waitGestorRequest():
-	port = 5000
-
-	print("*** Server ***\n Waiting on port "+str(port)+" ...")
-	socket_TCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	socket_TCP.bind((serverIP, port))
-	socket_TCP.listen(1)
-	connection, address = socket_TCP.accept()
-	print("Connected from "+str(address))
-	#gestorIP = address[0]
-	while True:
-		gestorRequest = connection.recv(1024)
-		if not gestorRequest:
-			break
-		return gestorRequest 
-
 
 class peers_thread(Thread):
 
-	def __init__(self, peer_socket, message):
+	def __init__(self, peer_socket, message, gestor_conn):
 		Thread.__init__(self)
 		self.peer_socket = peer_socket
 		self.message = message
+		self.gestor_conn = gestor_conn
 
 	def run(self):
 
@@ -101,21 +84,11 @@ class peers_thread(Thread):
 					print(e)
 					self.peer_socket.close()
 					break
-			sendResult_Gestor(res)
+			self.gestor_conn.send(res.encode())
 			break	
 
 		self.peer_socket.shutdown(socket.SHUT_RDWR)
 		self.peer_socket.close()	
-
-def sendResult_Gestor(resultado):
-	port = 5005
-
-	print("(TCP) Connecting to Gestor "+str(gestorIP)+" ...")
-	socket_TCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	socket_TCP.connect((gestorIP, port))
-	socket_TCP.send(resultado.encode())
-	socket_TCP.close()
-
 
 if __name__ == '__main__':
 
@@ -136,42 +109,3 @@ if __name__ == '__main__':
 
 		for t in threads_gestor:
 			t.join()
-		
-		#gestorRequest = waitGestorRequest().decode()
-		#print("Gestor Request: "+str(gestorRequest))
-
-		
-		
-
-		# requestFields = gestorRequest.split()
-		# typeID = requestFields[0]
-		# teste = requestFields[1]
-		# peerA_IP = requestFields[2]
-		# peerB_IP = requestFields[3]
-		# optional = requestFields[4]
-
-		# socket_peer_inicial.connect((peerA_IP, TCP_PORT))
-		# socket_peer_final.connect((peerB_IP, TCP_PORT))
-		
-		
-		# message = typeID+' '+teste+' '+peerB_IP+' '+optional
-
-
-		# thread_inicial = activatePeers_thread(socket_peer_inicial, message)
-		# thread_final = activatePeers_thread(socket_peer_final, message)
-
-		# thread_inicial.start()
-		# thread_final.start()
-
-		# threads.append(thread_inicial)
-		# threads.append(thread_final)
-
-		# for t in threads:
-		# 	t.join()
-
-
-		#socket_peer.connect()
-		#activatePeers(gestorRequest)
-		#monitorizationResult = waitPeerResult()
-		#print("Monitorization Result: "+str(monitorizationResult))
-		#sendResult_Gestor(monitorizationResult)
