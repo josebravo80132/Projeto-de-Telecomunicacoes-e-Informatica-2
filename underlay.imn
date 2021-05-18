@@ -2,7 +2,7 @@ node n1 {
     type router
     model PC
     network-config {
-	hostname manager
+	hostname gestorIP
 	!
 	interface eth0
 	 ip address 10.0.0.20/24
@@ -10,8 +10,8 @@ node n1 {
 	!
     }
     canvas c1
-    iconcoords {254.0 46.0}
-    labelcoords {262.0 72.0}
+    iconcoords {255.0 46.0}
+    labelcoords {273.0 86.0}
     interface-peer {eth0 n2}
     services {OSPFv2 OSPFv3 zebra DefaultRoute}
 }
@@ -20,7 +20,7 @@ node n2 {
     type router
     model host
     network-config {
-	hostname server
+	hostname serverIP
 	!
 	interface eth1
 	 ip address 10.0.1.10/24
@@ -33,7 +33,7 @@ node n2 {
     }
     canvas c1
     iconcoords {105.33333333333333 169.66666666666666}
-    labelcoords {103.33333333333333 195.0}
+    labelcoords {106.33333333333333 207.0}
     interface-peer {eth0 n1}
     interface-peer {eth1 n6}
     services {OSPFv2 OSPFv3 zebra DefaultRoute SSH}
