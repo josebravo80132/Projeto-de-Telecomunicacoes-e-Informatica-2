@@ -2,11 +2,38 @@ import socket
 from threading import Thread
 import time
 import errno
+import subprocess
 
 serverIP = socket.gethostbyname(socket.gethostname())
 gestorIP =  socket.gethostbyname("gestorIP")
 
 TCP_PORT = 5000
+
+
+
+def message_ID(i):
+	switcher= {	0: teste(),	1: result(), 2: error()}
+
+def runPing(ip, nTries):
+	res = subprocess.run(["ping", ip, "-c", nTries], stdout=subprocess.PIPE).stdout.decode(
+		'utf-8').split("\n")
+
+	response = res.pop(-3)
+	print(response)
+	result = response.split(',')
+	packets_received = int((result[1].split(' '))[1])
+	packet_loss_perc = (result[2].split('%'))[0]
+
+	if(packets_received != 0):
+		time_info = res.pop(-2)
+		avg_time =(time_info.split('/'))[4]
+		return  avg_time
+	else:
+		return(-1)
+	# len(res) > 1
+	# time_info = res.pop(-1)
+
+	# res.pop(len(res)-1)
 
 
 class gestor_thread(Thread):
@@ -34,24 +61,30 @@ class gestor_thread(Thread):
 			peerB_IP = requestFields[3]
 			optional = requestFields[4]
 
-			socket_peer_inicial.connect((peerA_IP, TCP_PORT))
-			socket_peer_final.connect((peerB_IP, TCP_PORT))
-			
-			global message
-			message = typeID+' '+teste+' '+peerB_IP+' '+optional
-			print(message)
+			if int(teste) == 4 and int(peerB_IP) == 0:
+				result = runPing(peerA_IP, optional)
+				message_result = "1 " + "4 " + peerA_IP + " " + peerB_IP + " " +  result
+				conn.send(message_result.encode())
 
-			thread_inicial = peers_thread(socket_peer_inicial, message, conn)
-			thread_final = peers_thread(socket_peer_final, message, conn)
+			else:
+				socket_peer_inicial.connect((peerA_IP, TCP_PORT))
+				socket_peer_final.connect((peerB_IP, TCP_PORT))
+				
+				global message
+				message = typeID+' '+teste+' '+peerB_IP+' '+optional
+				print(message)
 
-			thread_inicial.start()
-			thread_final.start()
+				thread_inicial = peers_thread(socket_peer_inicial, message, conn)
+				thread_final = peers_thread(socket_peer_final, message, conn)
 
-			peer_threads.append(thread_inicial)
-			peer_threads.append(thread_final)
+				thread_inicial.start()
+				thread_final.start()
 
-			for t in peer_threads:
-				t.join()
+				peer_threads.append(thread_inicial)
+				peer_threads.append(thread_final)
+
+				for t in peer_threads:
+					t.join()
 
 			conn.close()
 
@@ -84,6 +117,7 @@ class peers_thread(Thread):
 					print(e)
 					self.peer_socket.close()
 					break
+
 			self.gestor_conn.send(res.encode())
 			break	
 
