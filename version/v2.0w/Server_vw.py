@@ -23,17 +23,17 @@ def storeDB(result):
 
 	print(f"ID teste: {test_id}\nResultado: {test_res}\nPeer inicial: {peer_inicial}\nPeer final: {peer_final}\nTraceroute: {traceroute}")
 	connDB = sqlite3.connect("/home/jose/Documents/pti2/Projeto-de-Telecomunicacoes-e-Informatica-2/nodelogin/localhost")
-	connDB.execute('''CREATE TABLE IF NOT EXISTS TESTES (ID text, PEER_I text, PEER_F text, RESULT text)''')
+	#connDB.execute('''CREATE TABLE IF NOT EXISTS TESTES (ID bigint(20) AUTO_INCREMENT,TESTE text, PEER_I text, PEER_F text, RESULT text, TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)''')
 	connDB.execute("INSERT INTO TESTES (ID, PEER_I, PEER_F, RESULT) VALUES(?,?,?,?)", (test_id, peer_inicial, peer_final, test_res))
 	connDB.commit()
 
-	cursor = connDB.execute("SELECT ID, PEER_I, PEER_F, RESULT from TESTES")
+	# cursor = connDB.execute("SELECT ID, PEER_I, PEER_F, RESULT from TESTES")
 
-	for row in cursor:
-		print("ID = ", row[0])
-		print("PEER_I = ", row[1])
-		print("PEER_F = ", row[2])
-		print("RESULT = ", row[3])
+	# for row in cursor:
+	# 	print("ID = ", row[0])
+	# 	print("PEER_I = ", row[1])
+	# 	print("PEER_F = ", row[2])
+	# 	print("RESULT = ", row[3])
 
 	connDB.close
 
@@ -88,7 +88,7 @@ class gestor_thread(Thread):
 			peerB_IP = requestFields[3]
 			optional = requestFields[4]
 
-			if int(teste) == 4 and int(peerB_IP) == 0:
+			if int(teste) == 4 and peerB_IP == "0":
 				result = runPing(peerA_IP, optional)
 				message_result = "1 " + "4 " + peerA_IP + " " + peerB_IP + " " +  result
 				storeDB(message_result)

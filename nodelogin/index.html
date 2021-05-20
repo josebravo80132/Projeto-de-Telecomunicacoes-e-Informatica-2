@@ -108,6 +108,7 @@
                                     <option>10.0.20.20</option>
                                     <option>10.0.0.10</option>
                                     <option>10.0.0.20</option>
+                                    <option>0</option>
                         		</select>
                         	</p>
                         	<br />
@@ -118,8 +119,17 @@
                             </p>
                             <br/>
                         	<p>
-                        		<input type="submit" value="Efetuar Teste" name="Submit">
+                        		<input type="submit" value="Efetuar Teste" name="Submit" onclick="alertFunction()">
                         	</p>
+                            <script> 
+                                function alertFunction() {
+                                    var result ="<%= result %>";
+
+                                    alert(result);
+                                }
+                            </script>
+                            
+
                         </form>
                     </div>
                 </div>

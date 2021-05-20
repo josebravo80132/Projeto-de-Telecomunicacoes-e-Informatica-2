@@ -61,6 +61,9 @@ app.post('/auth', function(request, response) {
 });
 
 app.post('/submit', function(request, response) {
+
+
+
 	var teste = request.body.Teste;
 	if (teste == 'Latência'){teste = 1};
 	if (teste == 'Perda de Pacotes'){teste = 2};
@@ -69,6 +72,7 @@ app.post('/submit', function(request, response) {
 	var peer_i = request.body.peeri;
 	var peer_f = request.body.peerf;
 	var opt = request.body.opt;
+	var result;
 
 	console.log(teste);
 	console.log(peer_i);
@@ -83,10 +87,22 @@ app.post('/submit', function(request, response) {
 			});
 
 			gestor.on('data', (data) => {
+				result  = data.toString('utf-8');
+				response.send(result);
 				console.log("Recebido "+data.toString('utf-8'));
 			});
 
-	response.redirect('/index.html')
+	//response.redirect('/resultado')
+});
+
+app.get('/resultado', function(request, response){
+	connection.all('SELECT  FROM TESTES', function(err, data, fields){
+		if (err) throw err;
+		response.send(data);
+		console.log(data[0].RESULT);
+	});
+	
+
 });
 
 app.get('/resultados', function(request, response) {
