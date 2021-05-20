@@ -3,12 +3,39 @@ from threading import Thread
 import time
 import errno
 import subprocess
+import sqlite3
 
 serverIP = socket.gethostbyname(socket.gethostname())
 gestorIP =  socket.gethostbyname("gestorIP")
 
 TCP_PORT = 5000
 
+
+def storeDB(result):
+	res_fields = result.split(" ")
+	test_id = res_fields[1]
+	test_res = res_fields[2]
+	traceroute = res_fields[3]
+	tr_split = traceroute.split(",") 
+	peer_inicial = tr_split[0]
+	peer_final = tr_split[-1]
+
+
+	print(f"ID teste: {test_id}\nResultado: {test_res}\nPeer inicial: {peer_inicial}\nPeer final: {peer_final}\nTraceroute: {traceroute}")
+	connDB = sqlite3.connect("resuts.db")
+	connDB.execute('''CREATE TABLE IF NOT EXISTS TESTES (ID text, PEER_I text, PEER_F text, RESULT text)''')
+	connDB.execute("INSERT INTO TESTES (ID, PEER_I, PEER_F, RESULT) VALUES(?,?,?,?)", (test_id, peer_inicial, peer_final, test_res))
+	connDB.commit()
+
+	cursor = connDB.execute("SELECT ID, PEER_I, PEER_F, RESULT from TESTES")
+
+	for row in cursor:
+		print("ID = ", row[0])
+		print("PEER_I = ", row[1])
+		print("PEER_F = ", row[2])
+		print("RESULT = ", row[3])
+
+	connDB.close
 
 
 def message_ID(i):
@@ -64,6 +91,7 @@ class gestor_thread(Thread):
 			if int(teste) == 4 and int(peerB_IP) == 0:
 				result = runPing(peerA_IP, optional)
 				message_result = "1 " + "4 " + peerA_IP + " " + peerB_IP + " " +  result
+				storeDB(message_result)
 				conn.send(message_result.encode())
 
 			else:
@@ -117,7 +145,7 @@ class peers_thread(Thread):
 					print(e)
 					self.peer_socket.close()
 					break
-
+			storeDB(res)
 			self.gestor_conn.send(res.encode())
 			break	
 

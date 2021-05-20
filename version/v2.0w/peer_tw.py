@@ -118,36 +118,31 @@ def waitUDP_message(test, timeout):
                 dataFields = receivedData.decode().split()
                 tmstpAUX += time.perf_counter()-float(dataFields[1])
            
-        except socket.error as e:
-            err = e.args[0]
-            if err == errno.ETIMEDOUT:
-                if test == 1:
-                    print("Monitoring Finished - Latencia Media = " +
-                          str(tmstpAUX/packetCounter)+" segundos")
-                    socket_UDP.settimeout(None)
-                    sendTCP_Server(1, test, str(tmstpAUX/packetCounter), fromIP)
+        except socket.timeout:
+            if test == 1:
+                print("Monitoring Finished - Latencia Media = " +
+                  str(tmstpAUX/packetCounter)+" segundos")
+                socket_UDP.settimeout(None)
+                sendTCP_Server(1, test, str(tmstpAUX/packetCounter), fromIP)
 
-                elif test == 2:
-                    print("Monitoring Finished - Pacotes Recebidos = " +
-                          str(packetCounter)+" ")
-                    sendTCP_Server(1, test, str(packetCounter), fromIP)
-                elif test == 3:
-                    timer_end = time.perf_counter()
-                    result_bw = ((packetCounter*1000)/(timer_end-timer_start))
-                    print("Demorou "+format((timer_end-timer_start),".2f")+ " segundos a transmitir 10 Mb")
-                    print("Monitoring Finished - Largura de banda = " + 
-                        format(((packetCounter*1000)/(timer_end-timer_start)), ".2f")+ " bytes/seg" )
-                    sendTCP_Server(1, test, result_bw, fromIP )
-                elif test == 4:
-                    if packetCounter == 0:
-                        print("Nao disponivel")
-                        sendTCP_Server(2, test, "-1", fromIP)
-                    else:
-                        print("Monitoring Finished - Teste de disponibilidade tempo de contacto = " + str(tmstpAUX/packetCounter))
-                        sendTCP_Server(1, test, str(tmstpAUX/packetCounter), fromIP)
-            else:
-                print("Socket error: " + err)
-                sendTCP_Server(2, "-1", "-1", fromIP) 
+            elif test == 2:
+                print("Monitoring Finished - Pacotes Recebidos = " +
+                  str(packetCounter)+" ")
+                sendTCP_Server(1, test, str(packetCounter), fromIP)
+            elif test == 3:
+                timer_end = time.perf_counter()
+                result_bw = ((packetCounter*1000)/(timer_end-timer_start))
+                print("Demorou "+format((timer_end-timer_start),".2f")+ " segundos a transmitir 10 Mb")
+                print("Monitoring Finished - Largura de banda = " + 
+                    format(((packetCounter*1000)/(timer_end-timer_start)), ".2f")+ " bytes/seg" )
+                sendTCP_Server(1, test, result_bw, fromIP )
+            elif test == 4:
+                if packetCounter == 0:
+                    print("Nao disponivel")
+                    sendTCP_Server(2, test, "-1", fromIP)
+                else:
+                    print("Monitoring Finished - Teste de disponibilidade tempo de contacto = " + str(tmstpAUX/packetCounter))
+                    sendTCP_Server(1, test, str(tmstpAUX/packetCounter), fromIP)
             break
 
 

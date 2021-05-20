@@ -14,7 +14,7 @@ const options = {
 	port: 5000
 };
 
-const message = new String('0 1 10.0.16.20 10.0.15.20 1');
+const message = new String('0 1 10.0.16.20 10.0.15.20 2');
 var encodedMessage = Buffer.from(message, 'utf-8');
 	readline.question('Mandar mensagem de latencia?', res => {
   	console.log(`a preparar!`);
