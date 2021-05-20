@@ -3,7 +3,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const notes = '/home/bruno/Desktop/nodelogin/login.html'
+const notes = './Projeto-de-Telecomunicacoes-e-Informatica-2/nodelogin/login.html'
 const net = require("net");
 const readline = require("readline").createInterface({
 	input: process.stdin,
@@ -68,12 +68,13 @@ app.post('/submit', function(request, response) {
 	if (teste == 'Disponibilidade'){teste = 4};
 	var peer_i = request.body.peeri;
 	var peer_f = request.body.peerf;
+	var opt = request.body.opt;
 
 	console.log(teste);
 	console.log(peer_i);
 	console.log(peer_f);
 
-	const message = new String(teste+" "+peer_i+" "+peer_f);
+	const message = new String("0 "+teste+" "+peer_i+" "+peer_f+" "+opt);
 	console.log(message);
 	var encodedmessage = Buffer.from(message, 'utf-8');
 			let gestor = net.connect(options, () =>{

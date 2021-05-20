@@ -22,7 +22,7 @@ def storeDB(result):
 
 
 	print(f"ID teste: {test_id}\nResultado: {test_res}\nPeer inicial: {peer_inicial}\nPeer final: {peer_final}\nTraceroute: {traceroute}")
-	connDB = sqlite3.connect("resuts.db")
+	connDB = sqlite3.connect("/home/jose/Documents/pti2/Projeto-de-Telecomunicacoes-e-Informatica-2/nodelogin/locahost")
 	connDB.execute('''CREATE TABLE IF NOT EXISTS TESTES (ID text, PEER_I text, PEER_F text, RESULT text)''')
 	connDB.execute("INSERT INTO TESTES (ID, PEER_I, PEER_F, RESULT) VALUES(?,?,?,?)", (test_id, peer_inicial, peer_final, test_res))
 	connDB.commit()
